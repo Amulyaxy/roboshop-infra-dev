@@ -1,5 +1,5 @@
 module "robosho" {
-    source = "../../terraform-aws-vpc"
+    source = "../terraform-aws-vpc"
     #source = "git::https://github.com/Amulyaxy/terraform-aws-vpc.git?ref=main"
     projectname = var.projectname
     Environment = var.Environment
