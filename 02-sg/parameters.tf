@@ -4,12 +4,12 @@ resource "aws_ssm_parameter" "vpn_sg_id" {
   value = module.vpn.sg_id
 }
 
-
 resource "aws_ssm_parameter" "mongodb_sg_id" {
   name  = "/${var.projectname}/${var.Environment}/mongodb_sg_id"
   type  = "String"
   value = module.mongodb.sg_id
 }
+
 resource "aws_ssm_parameter" "redis_sg_id" {
   name  = "/${var.projectname}/${var.Environment}/redis_sg_id"
   type  = "String"
@@ -63,8 +63,15 @@ resource "aws_ssm_parameter" "web_sg_id" {
   type  = "String"
   value = module.web.sg_id
 }
+
 resource "aws_ssm_parameter" "app_alb_sg_id" {
   name  = "/${var.projectname}/${var.Environment}/app_alb_sg_id"
   type  = "String"
   value = module.app_alb.sg_id
+}
+
+resource "aws_ssm_parameter" "web_alb_sg_id" {
+  name  = "/${var.projectname}/${var.Environment}/web_alb_sg_id"
+  type  = "String"
+  value = module.web_alb.sg_id
 }

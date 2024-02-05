@@ -35,6 +35,7 @@ resource "null_resource" "catalogue" {
     instance_id = module.catalogue.id
   }
 
+
   # Bootstrap script can run on any instance of the cluster
   # So we just choose the first in this case
   connection {
@@ -70,16 +71,16 @@ resource "aws_ami_from_instance" "catalogue" {
     depends_on = [aws_ec2_instance_state.catalogue ]
 }
 
-# resource "null_resource" "catalogue_delete" {
-#   triggers = {
-#     instance_id = module.catalogue.id
-#   }
-# #     provisioner "local-exec" {
-# #     # Bootstrap script called with private_ip of each node in the cluster
-# #     command = "aws ec2 terminate-instances --instance-ids ${module.catalogue.id}"
-# #   }
-# #   depends_on = [aws_ami_from_instance.catalogue]
-# # }
+resource "null_resource" "catalogue_delete" {
+  triggers = {
+    instance_id = module.catalogue.id
+  }
+    provisioner "local-exec" {
+    # Bootstrap script called with private_ip of each node in the cluster
+    command = "aws ec2 terminate-instances --instance-ids ${module.catalogue.id}"
+  }
+  depends_on = [aws_ami_from_instance.catalogue]
+}
 resource "aws_launch_template" "catalogue" {
   name = "${local.name}-${var.tags.Component}"
 
@@ -97,6 +98,7 @@ resource "aws_launch_template" "catalogue" {
       Name = "${local.name}-${var.tags.Component}"
     }
   }
+  depends_on = [ null_resource.catalogue_delete,aws_ami_from_instance.catalogue ]
 
 }
  
@@ -146,6 +148,7 @@ resource "aws_lb_listener_rule" "catalogue" {
       values = ["${var.tags.Component}-app-${var.Environment}.${var.zone_name}"]
     }
   }
+  depends_on = [ aws_lb_target_group.catalogue ]
 }
 
 resource "aws_autoscaling_policy" "catalogue" {
@@ -159,6 +162,7 @@ resource "aws_autoscaling_policy" "catalogue" {
     }
     target_value = 5.0
   }
+  depends_on = [ aws_autoscaling_group.catalogue ]
 }
   
 
